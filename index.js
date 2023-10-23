@@ -21,16 +21,23 @@ let snake = [
 ]
 window.addEventListener("keydown", handleKeyDown)
 
+function resizeWindow() {
+    if(window.screen.width < 511) {
+        
+    }
+  
+}
+
 startGame();
 
 function startGame() {
+    
     context.fillStyle = "#E2F5B9"
     context.fillRect(0, 0, WIDTH, HEIGHT)
     msgDiv.style.visibility = 'visible';
     createFood();
     displayFood();
     drawSnake()
-
 }
 
 function clearBoard() {
@@ -107,6 +114,7 @@ function drawText(text, centerX, centerY, fontsize, fontface) {
 
 
 function nextTick(isTerminated) {
+
 
     if (!active) {
         clearBoard()

@@ -9,8 +9,8 @@
     text-align: center;
 }
 #score {
-    width: 500px;
-    margin: 0 auto;
+    /* width: 500px;
+    margin: 0 auto; */
     padding: 10px 0 0 0;
     font-size: 1.2rem;
 }
@@ -21,8 +21,8 @@
 }
 
 .container{
-    display: flex;
-    justify-content: center;
+    margin: 0 auto;
+    width: 500px;
 }
 
 #game-board {
@@ -33,4 +33,22 @@
 .footer {
     margin-top: 1rem;
     text-align: center;
+}
+
+@media (width < 511px) {
+    .container{
+        width: 400px;
+    }
+    canvas {
+        width: 400px;
+    }
+}
+
+@media (300px < width < 426px) {
+    .container{
+        width: 300px;
+    }
+    canvas {
+        width: 300px;
+    }
 }

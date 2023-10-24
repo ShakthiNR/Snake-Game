@@ -11,7 +11,9 @@ const LEFT = 37, UP = 38, RIGHT = 39, DOWN = 40, SPACE = 32;
 let foodX, foodY, xVel = UNIT, yVel = 0, food, score = 0;
 let active = true, started = false, isStopped = false, SPEED = 200, isObstacles = false, isMuted = false;
 
-const snakeFood = ["🪱", "🍎", "🐛", "🐥", "🐇"]
+const snakeFood = isTouchDevice () ? ["🍎", "🥛", "🥚"] : ["🪱", "🍎", "🐛", "🐥", "🥚"]
+
+// TODO: TO enhance the feature(in future)
 const bigFood = "🐇"
 const nonFood = ["🍇", "🫑", "🍲", "🌾"]
 
@@ -19,6 +21,7 @@ let snake = [{ x: 25, y: 25 }]
 let obstacles = []
 let audio;
 
+// Play sounds
 function audioPlayer(purpose) {
     if (isMuted) return
 
@@ -55,11 +58,12 @@ function audioPlayer(purpose) {
 window.addEventListener("keydown", handleKeyDown)
 
 
+// Responsive food items
 function resizeWindow() {
     if (window.screen.width < 600) {
-        UNIT = 20
+        UNIT = 30
     } else if (window.screen.width > 350 && window.screen.width < 300) {
-        UNIT = 15
+        UNIT = 30
     }
 }
 
@@ -77,8 +81,8 @@ function toggleMute() {
     isMuted = !isMuted
 }
 
-
-const isTouchDevice = () => {
+// Detect device - mobile or desktop
+function isTouchDevice() {
     try {
         document.createEvent("TouchEvent")
         deviceType = "touch"
@@ -89,23 +93,23 @@ const isTouchDevice = () => {
     }
 }
 
+// Initial message
 window.onload = function () {
     if (isTouchDevice()) {
         msgDiv.textContent = "Tap to pause or continue"
-        drawText("Tap to start", WIDTH / 2, (HEIGHT / 2) - 35, 30, 'serif');
+        drawText("Tap to start", WIDTH / 2, (HEIGHT / 2) - 35, 30, 'atarian, sans-serif');
     } else {
         msgDiv.textContent = "Press space to pause or continue"
-        drawText("Press space to start", WIDTH / 2, (HEIGHT / 2) - 35, 30, 'serif');
+        drawText("Press space to start", WIDTH / 2, (HEIGHT / 2) - 35, 30, 'atarian, sans-serif');
     }
 
-
-   
 }
 
+
+// For tap event handling
 gameBoard.addEventListener('touchstart', function (event) {
     touchstartY = event.changedTouches[0].screenY;
 }, false);
-
 gameBoard.addEventListener('touchend', function (event) {
     let touchendY = event.changedTouches[0].screenY;
     if (touchendY === touchstartY) {
@@ -117,7 +121,6 @@ gameBoard.addEventListener('touchend', function (event) {
 
 
 gameBoard.addEventListener('swiped-left', function (e) {
-
     if (isTouchDevice()) {
         initialize()
         if (xVel === UNIT) return
@@ -161,7 +164,6 @@ gameBoard.addEventListener('swiped-down', function (e) {
 });
 
 
-
 startGame();
 
 function startGame() {
@@ -181,7 +183,7 @@ function clearBoard() {
 function createFood() {
     foodX = getRandomNumber(WIDTH / UNIT) * UNIT
     foodY = getRandomNumber(HEIGHT / UNIT) * UNIT
-    food = snakeFood[getRandomNumber(5)]
+    food = snakeFood[getRandomNumber(snakeFood.length)]
     controlSpeed()
 }
 
@@ -191,14 +193,13 @@ function getRandomNumber(number) {
 
 //TODO: Check the food position (check algorithm)
 function displayFood() {
-    context.font = `${UNIT}px Arial`;
+    context.font = isTouchDevice() ?  `${UNIT - 2}px serif` : `${UNIT}px serif`;
     var textX = foodX + UNIT / 2 - context.measureText(food).width / 2;
     var textY = foodY + UNIT / 2 + 10;
     context.fillText(food, textX, textY);
 }
 
-
-
+// Modify speed if score increases
 function controlSpeed() {
     if (score >= 5 && score <= 10) SPEED = 200
     else if (score >= 11 && score <= 15) SPEED = 180
@@ -211,6 +212,7 @@ function controlSpeed() {
 
 function drawSnake() {
 
+    // Iterates over array too render snake
     snake.forEach((snakePart, index) => {
         if (index === 0) context.fillStyle = "#4B772E";
         else context.fillStyle = "#ACDB55";
@@ -219,12 +221,14 @@ function drawSnake() {
     })
 }
 
+// Move snake -> unshift, pop
 function moveSnake() {
     if (isObstacles) obstacles.length = 0
 
     const head = { x: snake[0].x + xVel, y: snake[0].y + yVel }
     snake.unshift(head)
 
+    // Catch the food
     if (snake[0].x === foodX && snake[0].y === foodY) {
         audioPlayer("bite")
         score = score + 1;
@@ -266,6 +270,7 @@ function buildObstacles({ initial }) {
     return tempObstacles
 }
 
+// algorithm to build obstacles
 function createObstacles() {
 
     if (score !== 0 && score % 3 === 0) {
@@ -275,11 +280,19 @@ function createObstacles() {
             context.fillRect(part.x, part.y, UNIT, UNIT)
         })
         isObstacles = true
-    } else isObstacles = false
+    }
+    else if (score !== 0 && score > 20 && score % 7 === 0) {
+        obstacles = buildObstacles({ initial: false })
+        obstacles.forEach((part) => {
+            context.fillStyle = "#222";
+            context.fillRect(part.x, part.y, UNIT, UNIT)
+        })
+        isObstacles = true
+    }
+    else isObstacles = false
 }
 
 function nextTick(isTerminated) {
-
     if (!active) {
         clearBoard()
         clearTimeout(timeOutVar)
@@ -321,6 +334,7 @@ function initialize() {
 }
 
 function handleSpace() {
+
     if (!active) {
         active = true;
         started = true;
@@ -339,10 +353,10 @@ function handleSpace() {
     }
 }
 
-
+// control the snake navigation
 function handleKeyDown(event) {
 
-    if (event.keyCode === LEFT || event.keyCode === RIGHT || event.keyCode === UP || event.keyCode === DOWN || event.keyCode === SPACE) {
+    if (event.keyCode === LEFT || event.keyCode === RIGHT || event.keyCode === UP || event.keyCode === DOWN) {
         initialize()
     }
 
@@ -367,7 +381,6 @@ function handleKeyDown(event) {
             xVel = 0; yVel = UNIT; break;
         case SPACE:
             audioPlayer("space")
-
             handleSpace()
     }
 }
@@ -392,6 +405,7 @@ function isHeadHit() {
     return hitHead.length === 0 ? false : true
 }
 
+// to detect if snake hits own body
 function isValidSnakePosition() {
     const seen = {};
     const duplicates = [];

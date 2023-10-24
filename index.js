@@ -20,8 +20,8 @@ let obstacles = []
 let audio;
 
 function audioPlayer(purpose) {
-    if(isMuted) return
-    
+    if (isMuted) return
+
     switch (purpose) {
         case "left":
             audio = new Audio('/assets/audio/left.mp3'); break;
@@ -38,31 +38,35 @@ function audioPlayer(purpose) {
             audio = new Audio('/assets/audio/start-game.mp3'); break;
 
         case "hit":
-            audio = new Audio('/assets/audio/hit.mp3'); break;
+            audio = new Audio('/assets/audio/dead.mp3'); break;
 
         case "space":
             audio = new Audio('/assets/audio/pop.mp3'); break;
 
         case "bite":
             audio = new Audio('/assets/audio/eat.mp3'); break;
+
+        case "snake-sound":
+            audio = new Audio('/assets/audio/snake-sound.mp3'); break;
     }
     if (audio) audio.play();
 }
 
 window.addEventListener("keydown", handleKeyDown)
 
+
 function resizeWindow() {
     if (window.screen.width < 600) {
         UNIT = 20
-    }else if (window.screen.width > 300 && window.screen.width < 420) {
+    } else if (window.screen.width > 350 && window.screen.width < 300) {
         UNIT = 15
     }
 }
 
 function toggleMute() {
-  
+
     const muteIcon = document.getElementById("mute-icon");
-    if(isMuted) {
+    if (isMuted) {
         muteIcon.classList.remove('fa-volume-mute')
         muteIcon.classList.add('fa-volume-up')
     } else {
@@ -72,6 +76,91 @@ function toggleMute() {
 
     isMuted = !isMuted
 }
+
+
+const isTouchDevice = () => {
+    try {
+        document.createEvent("TouchEvent")
+        deviceType = "touch"
+        return true
+    } catch (e) {
+        deviceType = "mouse"
+        return false
+    }
+}
+
+window.onload = function () {
+    if (isTouchDevice()) {
+        msgDiv.textContent = "Tap to pause or continue"
+        drawText("Tap to start", WIDTH / 2, (HEIGHT / 2) - 35, 30, 'serif');
+    } else {
+        msgDiv.textContent = "Press space to pause or continue"
+        drawText("Press space to start", WIDTH / 2, (HEIGHT / 2) - 35, 30, 'serif');
+    }
+
+
+   
+}
+
+gameBoard.addEventListener('touchstart', function (event) {
+    touchstartY = event.changedTouches[0].screenY;
+}, false);
+
+gameBoard.addEventListener('touchend', function (event) {
+    let touchendY = event.changedTouches[0].screenY;
+    if (touchendY === touchstartY) {
+        if (isTouchDevice()) {
+            handleSpace()
+        }
+    }
+}, false);
+
+
+gameBoard.addEventListener('swiped-left', function (e) {
+
+    if (isTouchDevice()) {
+        initialize()
+        if (xVel === UNIT) return
+        audioPlayer("left")
+        xVel = -UNIT;
+        yVel = 0;
+    }
+});
+
+gameBoard.addEventListener('swiped-right', function (e) {
+
+    if (isTouchDevice()) {
+        initialize()
+        if (xVel === -UNIT) return
+        audioPlayer("right")
+        xVel = UNIT;
+        yVel = 0;
+    }
+});
+
+gameBoard.addEventListener('swiped-up', function (e) {
+
+    if (isTouchDevice()) {
+        initialize()
+        if (yVel === UNIT) return
+        audioPlayer("up")
+        xVel = 0; yVel = -UNIT;
+
+    }
+});
+
+gameBoard.addEventListener('swiped-down', function (e) {
+
+    if (isTouchDevice()) {
+        initialize()
+        if (yVel === -UNIT) return
+        audioPlayer("down")
+        xVel = 0; yVel = UNIT;
+
+    }
+});
+
+
 
 startGame();
 
@@ -102,7 +191,7 @@ function getRandomNumber(number) {
 
 //TODO: Check the food position (check algorithm)
 function displayFood() {
-    context.font = "20px Arial";
+    context.font = `${UNIT}px Arial`;
     var textX = foodX + UNIT / 2 - context.measureText(food).width / 2;
     var textY = foodY + UNIT / 2 + 10;
     context.fillText(food, textX, textY);
@@ -141,7 +230,7 @@ function moveSnake() {
         score = score + 1;
         scoreValue.textContent = score;
         createFood()
-    } else  snake.pop()
+    } else snake.pop()
 
 }
 
@@ -194,14 +283,14 @@ function nextTick(isTerminated) {
     if (!active) {
         clearBoard()
         clearTimeout(timeOutVar)
-        drawText("Game Over!!!", WIDTH / 2, (HEIGHT / 2) - 30, 50, 'serif');
-        drawText("Press space to continue", WIDTH / 2, (HEIGHT / 2), 16, 'serif');
+        drawText("Game Over!!!", WIDTH / 2, (HEIGHT / 2) - 35, 50, 'serif');
+        drawText(`${isTouchDevice() ? "Tap to continue" : "Press space to continue"}  `, WIDTH / 2, (HEIGHT / 2), 24, 'serif');
         msgDiv.style.visibility = 'hidden';
         return
     }
 
     if (isTerminated) clearTimeout(timeOutVar)
-     else {
+    else {
         timeOutVar = setTimeout(() => {
             clearBoard()
             displayFood()
@@ -220,17 +309,41 @@ function resetVariables() {
     score = 0
     scoreValue.textContent = score;
     yVel = 0;
+    audioPlayer("snake-sound")
+}
+
+function initialize() {
+    if (!started) {
+        started = true;
+        nextTick();
+        return
+    }
+}
+
+function handleSpace() {
+    if (!active) {
+        active = true;
+        started = true;
+        resetVariables()
+        startGame();
+        nextTick(false)
+        return
+    }
+
+    if (!started) {
+        started = true;
+        nextTick();
+    } else {
+        isStopped = !isStopped;
+        nextTick(isStopped)
+    }
 }
 
 
 function handleKeyDown(event) {
 
     if (event.keyCode === LEFT || event.keyCode === RIGHT || event.keyCode === UP || event.keyCode === DOWN || event.keyCode === SPACE) {
-        if (!started) {
-            started = true;
-            nextTick();
-            return
-        }
+        initialize()
     }
 
     switch (event.keyCode) {
@@ -255,22 +368,7 @@ function handleKeyDown(event) {
         case SPACE:
             audioPlayer("space")
 
-            if (!active) {
-                active = true;
-                started = true;
-                resetVariables()
-                startGame();
-                nextTick(false)
-                return
-            }
-
-            if (!started) {
-                started = true;
-                nextTick();
-            } else {
-                isStopped = !isStopped;
-                nextTick(isStopped)
-            }
+            handleSpace()
     }
 }
 

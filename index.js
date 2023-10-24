@@ -15,7 +15,7 @@ const snakeFood = ["🪱", "🍎", "🐛", "🐥", "🐇"]
 const bigFood = "🐇"
 const nonFood = ["🍇", "🫑", "🍲", "🌾"]
 
-let snake = [{ x: 0, y: 0 }]
+let snake = [{ x: 25, y: 25 }]
 let obstacles = []
 let audio;
 
@@ -50,9 +50,9 @@ function audioPlayer(purpose) {
 window.addEventListener("keydown", handleKeyDown)
 
 function resizeWindow() {
-    if (window.screen.width < 511) {
+    if (window.screen.width < 600) {
         UNIT = 20
-    }else if (window.screen.width > 300 && window.screen.width < 380) {
+    }else if (window.screen.width > 300 && window.screen.width < 420) {
         UNIT = 15
     }
 }
@@ -106,29 +106,23 @@ function drawSnake() {
     snake.forEach((snakePart, index) => {
         if (index === 0) context.fillStyle = "#4B772E";
         else context.fillStyle = "#ACDB55";
-        
+
         context.fillRect(snakePart.x, snakePart.y, UNIT, UNIT)
     })
 }
 
 function moveSnake() {
-    if (isObstacles) {
-        obstacles.length = 0
-    }
+    if (isObstacles) obstacles.length = 0
 
     const head = { x: snake[0].x + xVel, y: snake[0].y + yVel }
     snake.unshift(head)
-
 
     if (snake[0].x === foodX && snake[0].y === foodY) {
         audioPlayer("bite")
         score = score + 1;
         scoreValue.textContent = score;
         createFood()
-    } else {
-        snake.pop()
-    }
-
+    } else  snake.pop()
 
 }
 
@@ -173,10 +167,7 @@ function createObstacles() {
             context.fillRect(part.x, part.y, UNIT, UNIT)
         })
         isObstacles = true
-    } else {
-        isObstacles = false
-    }
-
+    } else isObstacles = false
 }
 
 function nextTick(isTerminated) {
@@ -190,9 +181,8 @@ function nextTick(isTerminated) {
         return
     }
 
-    if (isTerminated) {
-        clearTimeout(timeOutVar)
-    } else {
+    if (isTerminated) clearTimeout(timeOutVar)
+     else {
         timeOutVar = setTimeout(() => {
             clearBoard()
             displayFood()
@@ -205,6 +195,14 @@ function nextTick(isTerminated) {
     }
 }
 
+function resetVariables() {
+    snake = [{ x: 25, y: 25 }]
+    xVel = UNIT;
+    score = 0
+    scoreValue.textContent = score;
+    yVel = 0;
+}
+
 
 function handleKeyDown(event) {
 
@@ -215,7 +213,6 @@ function handleKeyDown(event) {
             return
         }
     }
-
 
     switch (event.keyCode) {
         case LEFT:
@@ -242,11 +239,7 @@ function handleKeyDown(event) {
             if (!active) {
                 active = true;
                 started = true;
-                snake = [{ x: 0, y: 0 }]
-                xVel = UNIT;
-                score = 0
-                scoreValue.textContent = score;
-                yVel = 0;
+                resetVariables()
                 startGame();
                 nextTick(false)
                 return
@@ -270,8 +263,6 @@ function checkGameOver() {
 
     if (isHitWall || isHitBody || isHitTheObstacles) {
         audioPlayer("hit")
-        // var audio = new Audio('/assets/audio/hit.mp3');
-        // audio.play();
         active = false;
         // started = false; //TODO: Check it once
     }
@@ -280,7 +271,6 @@ function checkGameOver() {
 function isHeadHit() {
     let snakeHeadX = snake[0].x
     let snakeHeadY = snake[0].y
-
     let hitHead = obstacles.filter(elm => elm.x === snakeHeadX && elm.y === snakeHeadY)
     return hitHead.length === 0 ? false : true
 }
@@ -296,7 +286,5 @@ function isValidSnakePosition() {
         }
         seen[objStr] = true;
     }
-
-
     return duplicates.length === 0 ? true : false;
 }

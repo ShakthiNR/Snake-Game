@@ -1,17 +1,31 @@
+@font-face {
+  font-family: arcade;
+  src: url(/assets/font/ARCADECLASSIC.TTF);
+}
+
+@font-face {
+  font-family: atarian;
+  src: url(/assets//font/SF\ Atarian\ System\ Extended\ Bold.ttf);
+}
 *{
     padding: 0;
     margin: 0;
     box-sizing: border-box;
     background-color: #81A203;
+    font-family: atarian, sans-serif;
+    
 }
-
+#game-title {
+  letter-spacing: 7px;
+  font-family: arcade, sans-serif;
+}
 #game-title, #msg{
     text-align: center;
+   
 }
 #score {
-    /* width: 500px;
-    margin: 0 auto; */
-    padding: 10px 0 0 0;
+    font-family: atarian;
+    padding: 10px 0 10px 0;
     font-size: 1.2rem;
 }
 
@@ -47,6 +61,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap:3px;
   opacity: 0;
   animation: visible 0.8s ease-in-out 2.2s both;
 }
@@ -99,7 +114,27 @@
 
 
 
-@media (width < 511px) {
+@media (width < 600px) {
+  #game-title {
+    font-size: 2.5rem;
+  }
+  #msg {
+    font-size: 0.75rem;
+  }
+  #score{
+    font-size: 1rem;
+  }
+
+  .footer{
+    position: absolute;
+    bottom: 0;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+  }
+  .footer-2{
+    font-size: 0.8rem;
+  }
+  
     .container{
         width: 400px;
     }
@@ -108,7 +143,10 @@
     }
 }
 
-@media (300px < width < 380px) {
+@media (300px < width < 420px) {
+  #game-title {
+    font-size: 2rem;
+  }
     .container{
         width: 300px;
     }

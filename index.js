@@ -11,7 +11,7 @@ const LEFT = 37, UP = 38, RIGHT = 39, DOWN = 40, SPACE = 32;
 let foodX, foodY, xVel = UNIT, yVel = 0, food, score = 0;
 let active = true, started = false, isStopped = false, SPEED = 200, isObstacles = false, isMuted = false;
 
-const snakeFood = isTouchDevice () ? ["🍎", "🥛", "🥚"] : ["🪱", "🍎", "🐛", "🐥", "🥚"]
+const snakeFood = isTouchDevice() ? ["🍎", "🥚"] : ["🪱", "🍎", "🐛", "🐥", "🥚"]
 
 // TODO: TO enhance the feature(in future)
 const bigFood = "🐇"
@@ -61,9 +61,11 @@ window.addEventListener("keydown", handleKeyDown)
 // Responsive food items
 function resizeWindow() {
     if (window.screen.width < 600) {
-        UNIT = 30
+        UNIT = 25
     } else if (window.screen.width > 350 && window.screen.width < 300) {
-        UNIT = 30
+        UNIT = 25
+    } else {
+        UNIT = 25
     }
 }
 
@@ -193,9 +195,9 @@ function getRandomNumber(number) {
 
 //TODO: Check the food position (check algorithm)
 function displayFood() {
-    context.font = isTouchDevice() ?  `${UNIT - 2}px serif` : `${UNIT}px serif`;
+    context.font = isTouchDevice() ? `${UNIT - 3}px se rif` : `${UNIT}px serif`;
     var textX = foodX + UNIT / 2 - context.measureText(food).width / 2;
-    var textY = foodY + UNIT / 2 + 10;
+    var textY = foodY + UNIT / 2 + (isTouchDevice() ? 7 : 10);
     context.fillText(food, textX, textY);
 }
 

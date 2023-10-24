@@ -9,7 +9,7 @@ let UNIT = 25;
 const LEFT = 37, UP = 38, RIGHT = 39, DOWN = 40, SPACE = 32;
 
 let foodX, foodY, xVel = UNIT, yVel = 0, food, score = 0;
-let active = true, started = false, isStopped = false, SPEED = 200, isObstacles = false;
+let active = true, started = false, isStopped = false, SPEED = 200, isObstacles = false, isMuted = false;
 
 const snakeFood = ["🪱", "🍎", "🐛", "🐥", "🐇"]
 const bigFood = "🐇"
@@ -20,6 +20,8 @@ let obstacles = []
 let audio;
 
 function audioPlayer(purpose) {
+    if(isMuted) return
+    
     switch (purpose) {
         case "left":
             audio = new Audio('/assets/audio/left.mp3'); break;
@@ -57,6 +59,20 @@ function resizeWindow() {
     }
 }
 
+function toggleMute() {
+  
+    const muteIcon = document.getElementById("mute-icon");
+    if(isMuted) {
+        muteIcon.classList.remove('fa-volume-mute')
+        muteIcon.classList.add('fa-volume-up')
+    } else {
+        muteIcon.classList.remove('fa-volume-up')
+        muteIcon.classList.add('fa-volume-mute')
+    }
+
+    isMuted = !isMuted
+}
+
 startGame();
 
 function startGame() {
@@ -67,7 +83,7 @@ function startGame() {
     displayFood();
     drawSnake()
 }
-ð
+
 function clearBoard() {
     context.fillStyle = "#E2F5B9"
     context.fillRect(0, 0, WIDTH, HEIGHT)
@@ -77,6 +93,7 @@ function createFood() {
     foodX = getRandomNumber(WIDTH / UNIT) * UNIT
     foodY = getRandomNumber(HEIGHT / UNIT) * UNIT
     food = snakeFood[getRandomNumber(5)]
+    controlSpeed()
 }
 
 function getRandomNumber(number) {
@@ -89,16 +106,18 @@ function displayFood() {
     var textX = foodX + UNIT / 2 - context.measureText(food).width / 2;
     var textY = foodY + UNIT / 2 + 10;
     context.fillText(food, textX, textY);
-    controlSpeed()
 }
 
+
+
 function controlSpeed() {
-    if (score >= 5 && score <= 10) SPEED = 160
-    else if (score >= 11 && score <= 15) SPEED = 140
-    else if (score >= 16 && score <= 25) SPEED = 130
-    else if (score >= 26 && score <= 30) SPEED = 120
-    else if (score > 31) SPEED = 100
-    else SPEED = 200
+    if (score >= 5 && score <= 10) SPEED = 200
+    else if (score >= 11 && score <= 15) SPEED = 180
+    else if (score >= 16 && score <= 25) SPEED = 160
+    else if (score >= 26 && score <= 30) SPEED = 140
+    else if (score >= 31 && score <= 36) SPEED = 130
+    else if (score > 36) SPEED = 110
+    else SPEED = 220
 }
 
 function drawSnake() {

@@ -43,6 +43,15 @@
     width: 500px;
 }
 
+.container .header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.container .header i {
+  font-size: 1.2rem;
+  cursor: pointer;
+}
 #game-board {
     border: 1px solid transparent;
     border-radius: 10px;
@@ -66,7 +75,7 @@
   animation: visible 0.8s ease-in-out 2.2s both;
 }
 
-#score {
+#score, .container .header i {
     opacity: 0;
     animation: fade-in-fwd 0.8s cubic-bezier(0.390, 0.575, 0.565, 1.000) 2.15s both;
 }

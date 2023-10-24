@@ -11,26 +11,34 @@
     />
     <title>Snake Game</title>
 
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+      integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <h2 id="game-title">Snake Game 🐍</h2>
     <div id="msg">Press space to pause or continue</div>
 
-    <audio
-      id="music"
-      src="https://www.bensound.com/bensound-music/bensound-moose.mp3"
-      loop="loop"
-    ></audio>
-
     <div class="container">
-      <div id="score">Score : <span id="score-value">0</span></div>
+      <div class="header">
+        <div id="score">Score : <span id="score-value">0</span></div>
+        <div>
+          <i id="mute-icon" onclick="toggleMute()" class="fa fa-volume-up"></i>
+        </div>
+      </div>
+      
       <canvas id="game-board" width="500" height="500"></canvas>
     </div>
-    <div class="footer">&copy;shakthi.gamers-paradise.com</div>
 
+    <div class="footer">&copy;shakthi.gamers-paradise.com</div>
     <div class="footer-2">
-      <div class="typewriter">Developed by, Shakthi N R </div>
+      <div class="typewriter">Developed by, Shakthi N R</div>
       <div>
         <span class="type">
           <span>
